@@ -1,0 +1,107 @@
+---
+title: "Alumnado UCM"
+output: 
+  flexdashboard::flex_dashboard:
+---
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(readr) 
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+
+df <- read_delim("datos_tratados.csv", delim = ";")
+df$CURSO <- factor(df$CURSO)
+df$CENTRO <- factor(df$CENTRO)
+
+# Agrupamoslos datos por curso
+grouped_data <- df %>%
+  group_by(CURSO) %>%
+  summarise(across(where(is.numeric), sum))
+
+df_4_M <- select(grouped_data,CURSO,TOTAL_MUJERES)
+df_4_H <- select(grouped_data,CURSO,TOTAL_HOMBRES)
+colnames(df_4_M)[2] <-"TOTAL"
+colnames(df_4_H)[2] <-"TOTAL"
+
+df_4_M$GÉNERO <- rep('Mujer', times = nrow(df_4_M))
+df_4_H$GÉNERO <- rep('Hombre', times = nrow(df_4_H))
+
+df_5 <- bind_rows(df_4_M,df_4_H)
+
+```
+
+# Página 1
+## Columna 1
+### Tabla de datos
+```{r}
+# Crear una tabla interactiva con DT
+tabla_interactiva  <- datatable(df, options = list( pageLength = 25))
+tabla_interactiva
+```
+
+## Columna 2
+
+### Total de alumnos por curso
+```{r fig.width=10, fig.height=5}
+ggplot(df, aes(x = CURSO, y = TOTAL)) +
+  geom_col() +
+  labs(title = "U.C.M.", x = "Curso", y = "Total de alumno/as.",
+  ) +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 8))
+```
+
+# Página 2
+
+## columna
+
+### Componente dinámico con ggplot + plotly
+```{r}
+g1 <-ggplot(df_5, aes(x = CURSO, y = TOTAL, fill = GÉNERO)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Total de Alumnos",
+       x = "CURSO",
+       y = "Total") +
+  scale_fill_manual(values = c("Mujer" = "blue", "Hombre" = "red")) +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 8))
+g2 <- ggplotly(g1)
+g2
+```
+
+### Componente estático con ggplot 
+```{R}
+df_3 <- filter(df, CENTRO == "DERECHO" | CENTRO == "CIENCIAS_DE_LA_INFORMACION")
+
+df_3$CURSO <- factor(df_3$CURSO)
+df_3$CENTRO <- factor(df_3$CENTRO)
+df_4_M <- select(df_3,CURSO,CENTRO,TOTAL_MUJERES)
+df_4_H <- select(df_3,CURSO,CENTRO,TOTAL_HOMBRES)
+
+colnames(df_4_M)[3] <-"TOTAL"
+colnames(df_4_H)[3] <-"TOTAL"
+
+df_4_M$GÉNERO <- rep('Mujer', times = nrow(df_4_M))
+df_4_H$GÉNERO <- rep('Hombre', times = nrow(df_4_H))
+
+# Ahora uno las tablas de Hombre y Mujer
+
+df_5 <- bind_rows(df_4_M,df_4_H)
+
+
+g1 <-ggplot(df_5) +
+  geom_boxplot(aes(y=TOTAL, x = CENTRO, fill = GÉNERO) ) +
+  labs(title = "Distribución de las mujeres y hombres que estudian en la UCM",
+       subtitle = "Gráficos de cajas, (geom_boxplot).",
+       x = " ",
+       y = "Número de estudiantes \n ",
+       caption = "Fuente: El Centro de Inteligencia Institucional, UCM."
+  ) +
+  theme(axis.text.x = element_text(size = 10),
+        #arriba(top), izquierda (left), derecha (right)
+        legend.position = "top",
+  )
+g1
+```
+
+

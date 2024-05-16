@@ -1,0 +1,12 @@
+name: ejemplo4
+title:
+username: rdashboards-yolanda
+account: rdashboards-yolanda
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11989467
+bundleId: 8609200
+url: https://rdashboards-yolanda.shinyapps.io/ejemplo4/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

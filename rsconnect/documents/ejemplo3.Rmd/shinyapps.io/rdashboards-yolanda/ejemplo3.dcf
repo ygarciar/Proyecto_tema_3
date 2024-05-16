@@ -1,0 +1,10 @@
+name: ejemplo3
+title:
+username: rdashboards-yolanda
+account: rdashboards-yolanda
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11982706
+bundleId: 8608435
+url: https://rdashboards-yolanda.shinyapps.io/ejemplo3/
+version: 1

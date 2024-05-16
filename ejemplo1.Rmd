@@ -1,0 +1,50 @@
+---
+title: "Alumnado UCM"
+output: 
+  flexdashboard::flex_dashboard:
+
+---
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(readr)      
+library(ggplot2)
+library(DT)
+library(plotly)
+
+df <- read_delim("datos_tratados.csv", delim = ";")
+df$CURSO <- factor(df$CURSO)
+df$CENTRO <- factor(df$CENTRO)
+
+
+```
+
+# Página 1
+## Columna 1
+### Tabla de datos 
+```{r}
+# Crear una tabla interactiva con DT
+tabla_interactiva  <- datatable(df, options = list( pageLength = 25))
+tabla_interactiva
+```
+
+## Columna 2
+
+### Total de alumnos por curso
+```{r fig.width=10, fig.height=5}
+ggplot(df, aes(x = CURSO, y = TOTAL)) +
+  geom_col() +
+  labs(title = "U.C.M.", x = "Curso", y = "Total de alumno/as.",
+  ) +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 8))
+```
+
+
+# Página 2 {data-orientation=rows}
+
+## row
+
+### Componente
+
+## row
+
+### Componente
